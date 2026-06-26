@@ -25,6 +25,7 @@
 
 import base64
 import json
+import os
 import random
 import re
 import urllib
@@ -98,8 +99,15 @@ def show_qrcode(qr_code) -> None:  # type: ignore
     new_image.paste(image, (10, 10))
     draw = ImageDraw.Draw(new_image)
     draw.rectangle((0, 0, width + 19, height + 19), outline=(0, 0, 0), width=1)
-    del ImageShow.UnixViewer.options["save_all"]
-    new_image.show()
+    qrcode_path = os.path.abspath("data/login_qrcode.png")
+    os.makedirs(os.path.dirname(qrcode_path), exist_ok=True)
+    new_image.save(qrcode_path)
+    print(f"[MediaCrawler] Login QR code saved to: {qrcode_path}", flush=True)
+    try:
+        del ImageShow.UnixViewer.options["save_all"]
+        new_image.show()
+    except Exception as exc:
+        print(f"[MediaCrawler] Unable to open QR code viewer: {exc}", flush=True)
 
 
 def get_user_agent() -> str:
